@@ -43,7 +43,8 @@
     "glob": "^7.1.2",
     "gzip-size": "git+https://github.com/marapper/gzip-size.git",
     "prettycli": "^1.4.3",
-    "read-pkg-up": "^2.0.0"
+    "read-pkg-up": "^2.0.0",
+    "zopfli-size": "git+https://github.com/marapper/zopfli-size.git"
   },
   "bundlesize": [
     {
@@ -52,7 +53,21 @@
     },
     {
       "path": "./src/files.js",
-      "maxSize": "600B"
+      "real": {
+        "maxSize": "1.8KB"
+      },
+      "zlib": {
+        "maxSize": "600B",
+        "level": 6
+      },
+      "zopfli": {
+        "maxSize": "590B",
+        "level": 6
+      },
+      "brotli": {
+        "maxSize": "550B",
+        "level": 6
+      }
     }
   ],
   "lint-staged": {

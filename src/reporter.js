@@ -27,47 +27,63 @@ const setBuildStatus = ({
   debug('global message', globalMessage)
 }
 
-const compare = (files, masterValues = {}) => {
+const compareFile = (path, size, master, maxSize, postfix) => {
   let fail = false
+
+  let message = `${path}: ${postfix} ${bytes(size)} `
+  const prettySize = bytes(maxSize)
+  /*
+    if size > maxSize, fail
+    else if size > master, warn + pass
+    else yay + pass
+  */
+
+  if (size > maxSize) {
+    fail = true
+    if (prettySize) message += `> maxSize ${prettySize}`
+    error(message, { fail: false, label: 'FAIL' })
+  } else if (!master) {
+    if (prettySize) message += `< maxSize ${prettySize}`
+    info('PASS', message)
+  } else {
+    if (prettySize) message += `< maxSize ${prettySize} `
+    const diff = size - master
+
+    if (diff < 0) {
+      message += `(${bytes(Math.abs(diff))} smaller than master, good job!)`
+      info('PASS', message)
+    } else if (diff > 0) {
+      message += `(${bytes(diff)} larger than master, careful!)`
+      warn(message)
+    } else {
+      message += '(same as master)'
+      info('PASS', message)
+    }
+  }
+
+  return fail
+}
+
+const compare = (files, masterValues = {}) => {
   let globalMessage
+  let fail
 
   files.map(file => {
-    const { path, size, master, maxSize } = file
+    const { path, real, zlib, brotli, zopfli, master } = file
     file.master = masterValues[file.path]
 
-    let message = `${path}: ${bytes(size)} `
-    const prettySize = bytes(maxSize)
-    /*
-      if size > maxSize, fail
-      else if size > master, warn + pass
-      else yay + pass
-    */
-
-    if (size > maxSize) {
-      fail = true
-      if (prettySize) message += `> maxSize ${prettySize} gzip`
-      error(message, { fail: false, label: 'FAIL' })
-    } else if (!master) {
-      if (prettySize) message += `< maxSize ${prettySize} gzip`
-      info('PASS', message)
-    } else {
-      if (prettySize) message += `< maxSize ${prettySize} gzip `
-      const diff = size - master
-
-      if (diff < 0) {
-        message += `(${bytes(Math.abs(diff))} smaller than master, good job!)`
-        info('PASS', message)
-      } else if (diff > 0) {
-        message += `(${bytes(diff)} larger than master, careful!)`
-        warn(message)
-      } else {
-        message += '(same as master)'
-        info('PASS', message)
-      }
+    if (real.size !== null) {
+      fail = compareFile(path, real.size, master, real.maxSize, 'real') || fail
+    }
+    fail = compareFile(path, zlib.size, master, zlib.maxSize, 'zlib')
+    if (zopfli.size !== null) {
+      fail = compareFile(path, zopfli.size, master, zopfli.maxSize, 'zopfli') || fail
+    }
+    if (brotli.size !== null) {
+      fail = compareFile(path, brotli.size, master, brotli.maxSize, 'brotli') || fail
     }
 
-    if (files.length === 1) globalMessage = message
-    return debug('message', message)
+    if (files.length === 1) globalMessage = 'FAIL'
   })
 
   /* prepare the build page */
