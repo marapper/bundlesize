@@ -36,15 +36,18 @@ config.map(file => {
         },
         brotli: {
           size: file.brotli ? brotli.sync(content, brotliOpts) : null,
-          maxSize: (file.brotli && file.brotli.maxSize) ? bytes(file.brotli.maxSize) : maxSize
+          maxSize: (file.brotli && file.brotli.maxSize) ? bytes(file.brotli.maxSize) : maxSize,
+          level: file.brotli ? (file.brotli.level || file.level) : file.level,
         },
         zlib: {
           size: gzip.sync(content, zlibOpts),
-          maxSize: maxSize
+          maxSize: maxSize,
+          level: file.zlib ? (file.zlib.level || file.level) : file.level
         },
         zopfli: {
           size: file.zopfli ? zopfli.sync(content, zopfliOpts) : null,
-          maxSize: (file.zopfli && file.zopfli.maxSize) ? bytes(file.zopfli.maxSize) : maxSize
+          maxSize: (file.zopfli && file.zopfli.maxSize) ? bytes(file.zopfli.maxSize) : maxSize,
+          level: file.zopfli ? (file.zopfli.level || file.level) : file.level
         }
       })
     })

@@ -27,10 +27,13 @@ const setBuildStatus = ({
   debug('global message', globalMessage)
 }
 
-const compareFile = (path, size, master, maxSize, postfix) => {
+const compareFile = (path, obj, master, postfix) => {
   let fail = false
+  const {size, maxSize, level} = obj
 
-  let message = `${path}: ${postfix} ${bytes(size)} `
+  const levelStr = level ? `(${level})` : '';
+
+  let message = `${path}: ${postfix}${levelStr} ${bytes(size)} `
   const prettySize = bytes(maxSize)
   /*
     if size > maxSize, fail
@@ -73,14 +76,14 @@ const compare = (files, masterValues = {}) => {
     file.master = masterValues[file.path]
 
     if (real.size !== null) {
-      fail = compareFile(path, real.size, master, real.maxSize, 'real') || fail
+      fail = compareFile(path, real, master, 'real') || fail
     }
-    fail = compareFile(path, zlib.size, master, zlib.maxSize, 'zlib')
+    fail = compareFile(path, zlib, master, 'zlib')
     if (zopfli.size !== null) {
-      fail = compareFile(path, zopfli.size, master, zopfli.maxSize, 'zopfli') || fail
+      fail = compareFile(path, zopfli, master, 'zopfli') || fail
     }
     if (brotli.size !== null) {
-      fail = compareFile(path, brotli.size, master, brotli.maxSize, 'brotli') || fail
+      fail = compareFile(path, brotli, master, 'brotli') || fail
     }
 
     if (files.length === 1) globalMessage = 'FAIL'
