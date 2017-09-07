@@ -80,7 +80,9 @@ const compare = (files, masterValues = null) => {
     if (real.size !== null) {
       fail = compareFile(path, real, master, 'real') || fail
     }
-    fail = compareFile(path, zlib, master, 'zlib') || fail
+    if (zlib.size !== null) {
+      fail = compareFile(path, zlib, master, 'zlib') || fail
+    }
     if (zopfli.size !== null) {
       fail = compareFile(path, zopfli, master, 'zopfli') || fail
     }

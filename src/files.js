@@ -18,7 +18,7 @@ config.map(file => {
     })
   } else {
     paths.map(path => {
-      const maxSize = bytes(file.threshold || file.maxSize || file.zlib.maxSize) || Infinity
+      const maxSize = bytes(file.threshold || file.maxSize || file.zlib && file.zlib.maxSize) || Infinity
 
       const content = fs.readFileSync(path, 'utf8')
 
@@ -40,7 +40,7 @@ config.map(file => {
           level: file.brotli ? (file.brotli.level || file.level) : file.level,
         },
         zlib: {
-          size: gzip.sync(content, zlibOpts),
+          size: file.zlib || file.maxSize ? gzip.sync(content, zlibOpts) : null,
           maxSize: maxSize,
           level: file.zlib ? (file.zlib.level || file.level) : file.level
         },

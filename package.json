@@ -54,18 +54,14 @@
     {
       "path": "./src/files.js",
       "real": {
-        "maxSize": "1.96KB"
-      },
-      "zlib": {
-        "maxSize": "640B",
-        "level": 6
+        "maxSize": "2KB"
       },
       "zopfli": {
-        "maxSize": "620B",
+        "maxSize": "630B",
         "level": 6
       },
       "brotli": {
-        "maxSize": "589B",
+        "maxSize": "599B",
         "level": 6
       }
     }
