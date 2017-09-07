@@ -35,6 +35,8 @@ const compareFile = (path, obj, master, postfix) => {
 
   let message = `${path}: ${postfix}${levelStr} ${bytes(size)} `
   const prettySize = bytes(maxSize)
+
+  // TODO if maxSize = MB/KB, 2056 (1KB) should be <= 1KB maxsize
   /*
     if size > maxSize, fail
     else if size > master, warn + pass
