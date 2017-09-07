@@ -67,18 +67,20 @@ const compareFile = (path, obj, master, postfix) => {
   return fail
 }
 
-const compare = (files, masterValues = {}) => {
+const compare = (files, masterValues = null) => {
   let globalMessage
-  let fail
+  let fail = false
 
   files.map(file => {
     const { path, real, zlib, brotli, zopfli, master } = file
-    file.master = masterValues[file.path]
+    if (masterValues) {
+      file.master = masterValues[file.path]
+    }
 
     if (real.size !== null) {
       fail = compareFile(path, real, master, 'real') || fail
     }
-    fail = compareFile(path, zlib, master, 'zlib')
+    fail = compareFile(path, zlib, master, 'zlib') || fail
     if (zopfli.size !== null) {
       fail = compareFile(path, zopfli, master, 'zopfli') || fail
     }
@@ -95,19 +97,21 @@ const compare = (files, masterValues = {}) => {
   )
   let url = `https://bundlesize-store.now.sh/build?info=${params}`
 
-  debug('url before shortening', url)
+  setBuildStatus({ url, files, globalMessage, fail, event, branch })
 
-  shortener
-    .shorten(url)
-    .then(res => {
-      url = res.data.id
-      debug('url after shortening', url)
-      setBuildStatus({ url, files, globalMessage, fail, event, branch })
-    })
-    .catch(err => {
-      debug('err while shortening', err)
-      setBuildStatus({ url, files, globalMessage, fail, event, branch })
-    })
+  // debug('url before shortening', url)
+  //
+  // shortener
+  //   .shorten(url)
+  //   .then(res => {
+  //     url = res.data.id
+  //     debug('url after shortening', url)
+  //     setBuildStatus({ url, files, globalMessage, fail, event, branch })
+  //   })
+  //   .catch(err => {
+  //     debug('err while shortening', err)
+  //     setBuildStatus({ url, files, globalMessage, fail, event, branch })
+  //   })
 }
 
 const reporter = files => {
