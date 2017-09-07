@@ -1,9 +1,6 @@
 const fs = require('fs')
 const bytes = require('bytes')
 const glob = require('glob')
-const gzip = require('gzip-size')
-const brotli = require('brotli-size')
-const zopfli = require('zopfli-size')
 const { error } = require('prettycli')
 const config = require('./config')
 const debug = require('./debug')
@@ -35,17 +32,17 @@ config.map(file => {
           maxSize: (file.real && file.real.maxSize) ? bytes(file.real.maxSize) : maxSize
         },
         brotli: {
-          size: file.brotli ? brotli.sync(content, brotliOpts) : null,
+          size: file.brotli ? require('brotli-size').sync(content, brotliOpts) : null,
           maxSize: (file.brotli && file.brotli.maxSize) ? bytes(file.brotli.maxSize) : maxSize,
           level: file.brotli ? (file.brotli.level || file.level) : file.level,
         },
         zlib: {
-          size: file.zlib || file.maxSize ? gzip.sync(content, zlibOpts) : null,
+          size: file.zlib || file.maxSize ? require('gzip-size').sync(content, zlibOpts) : null,
           maxSize: maxSize,
           level: file.zlib ? (file.zlib.level || file.level) : file.level
         },
         zopfli: {
-          size: file.zopfli ? zopfli.sync(content, zopfliOpts) : null,
+          size: file.zopfli ? require('zopfli-size').sync(content, zopfliOpts) : null,
           maxSize: (file.zopfli && file.zopfli.maxSize) ? bytes(file.zopfli.maxSize) : maxSize,
           level: file.zopfli ? (file.zopfli.level || file.level) : file.level
         }
