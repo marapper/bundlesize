@@ -27,9 +27,10 @@ config.map(file => {
 
       files.push({
         path,
+        hidePass: file.hidePass,
         real: {
           size: file.real ? fs.statSync(path).size : null,
-          maxSize: (file.real && file.real.maxSize) ? bytes(file.real.maxSize) : maxSize
+          maxSize: (file.real && file.real.maxSize) ? bytes(file.real.maxSize) : maxSize,
         },
         brotli: {
           size: file.brotli ? require('brotli-size').sync(content, brotliOpts) : null,
@@ -39,12 +40,12 @@ config.map(file => {
         zlib: {
           size: file.zlib || file.maxSize ? require('gzip-size').sync(content, zlibOpts) : null,
           maxSize: maxSize,
-          level: file.zlib ? (file.zlib.level || file.level) : file.level
+          level: file.zlib ? (file.zlib.level || file.level) : file.level,
         },
         zopfli: {
           size: file.zopfli ? require('zopfli-size').sync(content, zopfliOpts) : null,
           maxSize: (file.zopfli && file.zopfli.maxSize) ? bytes(file.zopfli.maxSize) : maxSize,
-          level: file.zopfli ? (file.zopfli.level || file.level) : file.level
+          level: file.zopfli ? (file.zopfli.level || file.level) : file.level,
         }
       })
     })

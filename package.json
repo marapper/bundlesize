@@ -51,12 +51,13 @@
   "bundlesize": [
     {
       "path": "./index.js",
-      "maxSize": "600B"
+      "maxSize": "600B",
+      "hidePass": true
     },
     {
       "path": "./src/files.js",
       "real": {
-        "maxSize": "2KB"
+        "maxSize": "2.2KB"
       }
     }
   ],

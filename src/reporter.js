@@ -27,10 +27,9 @@ const setBuildStatus = ({
   debug('global message', globalMessage)
 }
 
-const compareFile = (path, obj, master, postfix) => {
+const compareFile = (path, obj, master, hidePass, postfix) => {
   let fail = false
   const {size, maxSize, level} = obj
-
   const levelStr = level ? `(${level})` : '';
 
   let message = `${path}: ${postfix}${levelStr} ${bytes(size)} `
@@ -49,20 +48,20 @@ const compareFile = (path, obj, master, postfix) => {
     error(message, { fail: false, label: 'FAIL' })
   } else if (!master) {
     if (prettySize) message += `< maxSize ${prettySize}`
-    info('PASS', message)
+    if (!hidePass) info('PASS', message)
   } else {
     if (prettySize) message += `< maxSize ${prettySize} `
     const diff = size - master
 
     if (diff < 0) {
       message += `(${bytes(Math.abs(diff))} smaller than master, good job!)`
-      info('PASS', message)
+      if (!hidePass) info('PASS', message)
     } else if (diff > 0) {
       message += `(${bytes(diff)} larger than master, careful!)`
       warn(message)
     } else {
       message += '(same as master)'
-      info('PASS', message)
+      if (!hidePass) info('PASS', message)
     }
   }
 
@@ -74,22 +73,22 @@ const compare = (files, masterValues = null) => {
   let fail = false
 
   files.map(file => {
-    const { path, real, zlib, brotli, zopfli, master } = file
+    const { path, real, zlib, brotli, zopfli, hidePass, master } = file
     if (masterValues) {
       file.master = masterValues[file.path]
     }
 
     if (real.size !== null) {
-      fail = compareFile(path, real, master, 'real') || fail
+      fail = compareFile(path, real, master, hidePass, 'real') || fail
     }
     if (zlib.size !== null) {
-      fail = compareFile(path, zlib, master, 'zlib') || fail
+      fail = compareFile(path, zlib, master, hidePass, 'zlib') || fail
     }
     if (zopfli.size !== null) {
-      fail = compareFile(path, zopfli, master, 'zopfli') || fail
+      fail = compareFile(path, zopfli, master, hidePass, 'zopfli') || fail
     }
     if (brotli.size !== null) {
-      fail = compareFile(path, brotli, master, 'brotli') || fail
+      fail = compareFile(path, brotli, master, hidePass, 'brotli') || fail
     }
 
     if (files.length === 1) globalMessage = 'FAIL'
