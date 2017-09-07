@@ -97,6 +97,9 @@ const compare = (files, masterValues = null) => {
   )
   let url = `https://bundlesize-store.now.sh/build?info=${params}`
 
+  // TODO option for fail or not
+  fail = false
+  // TODO option for save or not
   setBuildStatus({ url, files, globalMessage, fail, event, branch })
 
   // debug('url before shortening', url)
